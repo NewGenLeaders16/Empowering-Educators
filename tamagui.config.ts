@@ -1,9 +1,17 @@
 import { createAnimations } from '@tamagui/animations-react-native';
-import { createInterFont } from '@tamagui/font-inter';
 import { createMedia } from '@tamagui/react-native-media-driver';
 import { shorthands } from '@tamagui/shorthands';
 import { themes, tokens } from '@tamagui/themes';
-import { createTamagui, styled, SizableText, H1, YStack, Button as ButtonTamagui } from 'tamagui';
+import {
+  createTamagui,
+  styled,
+  SizableText,
+  H1,
+  YStack,
+  Button as ButtonTamagui,
+  createFont,
+} from 'tamagui';
+import { config as tmconfig } from '@tamagui/config/v3';
 
 const animations = createAnimations({
   bouncy: {
@@ -25,9 +33,32 @@ const animations = createAnimations({
   },
 });
 
-const headingFont = createInterFont();
+const urbanistFace = {
+  normal: { normal: 'Urbanist' },
+  bold: { normal: 'Urbanist-Bold' },
+  300: { normal: 'Urbanist-Light' },
+  500: { normal: 'Urbanist-Medium' },
+  600: { normal: 'Urbanist-SemiBold' },
+  700: { normal: 'Urbanist-Bold', italic: 'Urbanist-BoldItalic' },
+  800: { normal: 'Urbanist-Bold' },
+  900: { normal: 'Urbanist-Bold' },
+};
 
-const bodyFont = createInterFont();
+const headingFont = createFont({
+  size: tmconfig.fonts.heading.size,
+  lineHeight: tmconfig.fonts.heading.lineHeight,
+  weight: tmconfig.fonts.heading.weight,
+  letterSpacing: tmconfig.fonts.heading.letterSpacing,
+  face: urbanistFace,
+});
+
+const bodyFont = createFont({
+  size: tmconfig.fonts.body.size,
+  lineHeight: tmconfig.fonts.body.lineHeight,
+  weight: tmconfig.fonts.body.weight,
+  letterSpacing: tmconfig.fonts.body.letterSpacing,
+  face: urbanistFace,
+});
 
 export const Container = styled(YStack, {
   flex: 1,
@@ -92,7 +123,22 @@ const config = createTamagui({
     body: bodyFont,
     heading: headingFont,
   },
-  themes,
+  themes: {
+    light: {
+      primary_blue: '#10162c',
+      primary_yellow: '#fdb813',
+      white: '#ffffff',
+      primary_grey: '#bdbec0',
+      black: '#222222',
+    },
+    dark: {
+      primary_blue: '#10162c',
+      primary_yellow: '#fdb813',
+      white: '#ffffff',
+      primary_grey: '#bdbec0',
+      black: '#222222',
+    },
+  },
   tokens,
   media: createMedia({
     xs: { maxWidth: 660 },

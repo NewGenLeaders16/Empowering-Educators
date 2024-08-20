@@ -1,9 +1,10 @@
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
+import { router, Slot, SplashScreen, Stack } from 'expo-router';
 import React, { useEffect } from 'react';
 import { TamaguiProvider } from 'tamagui';
 
 import config from '../tamagui.config';
+import { FontAwesome } from '@expo/vector-icons';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -13,10 +14,23 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
-    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
-    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
+  const [loaded, error] = useFonts({
+    Urbanist: require('../assets/fonts/Urbanist-Regular.ttf'),
+    'Urbanist-Bold': require('../assets/fonts/Urbanist-Bold.ttf'),
+    'Urbanist-SemiBold': require('../assets/fonts/Urbanist-SemiBold.ttf'),
+    'Urbanist-Medium': require('../assets/fonts/Urbanist-Medium.ttf'),
+    'Urbanist-Light': require('../assets/fonts/Urbanist-Light.ttf'),
+    'Urbanist-BoldItalic': require('../assets/fonts/Urbanist-BoldItalic.ttf'),
+    ...FontAwesome.font,
   });
+
+  const InitialLayout = () => {
+    useEffect(() => {
+      router.replace('/');
+    });
+
+    return <Slot />;
+  };
 
   useEffect(() => {
     if (loaded) {
@@ -29,8 +43,7 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={config}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <InitialLayout />
       </Stack>
     </TamaguiProvider>
   );
