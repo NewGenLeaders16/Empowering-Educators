@@ -82,29 +82,42 @@ export const Subtitle = styled(SizableText, {
 });
 
 export const Button = styled(ButtonTamagui, {
-  backgroundColor: '#6366F1',
+  backgroundColor: '$primary_yellow',
   borderRadius: 28,
   hoverStyle: {
-    backgroundColor: '#5a5fcf',
+    backgroundColor: '$primary_yellow',
   },
   pressStyle: {
-    backgroundColor: '#5a5fcf',
+    backgroundColor: '$primary_yellow',
   },
   maxWidth: 500,
 
   // Shaddows
-  shadowColor: '#000',
-  shadowOffset: {
-    height: 2,
-    width: 0,
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
+  // shadowColor: '#000',
+  // shadowOffset: {
+  //   height: 2,
+  //   width: 0,
+  // },
+  // shadowOpacity: 0.25,
+  // shadowRadius: 3.84,
 
   // Button text
-  color: '#FFFFFF',
+  color: '#000000',
   fontWeight: '600', // Is not passed down to the text. Probably a bug in Tamagui: https://github.com/tamagui/tamagui/issues/1156#issuecomment-1802594930
   fontSize: 16,
+  fontFamily: '$body',
+});
+
+export const OutlinedButton = styled(ButtonTamagui, {
+  borderColor: '$primary_yellow',
+  borderWidth: 2,
+  borderRadius: 28,
+  maxWidth: 500,
+  // Button text
+  color: '$primary_yellow',
+  fontWeight: '600', // Is not passed down to the text. Probably a bug in Tamagui: https://github.com/tamagui/tamagui/issues/1156#issuecomment-1802594930
+  fontSize: 16,
+  fontFamily: '$body',
 });
 
 const config = createTamagui({

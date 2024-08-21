@@ -2,32 +2,56 @@ import { Link, Tabs } from 'expo-router';
 
 import { HeaderButton } from '../../../components/HeaderButton';
 import { TabBarIcon } from '../../../components/TabBarIcon';
+import colors from '~/constants/colors';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: colors.light.primary_yellow,
+        tabBarInactiveTintColor: colors.light.primary_grey,
       }}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <HeaderButton />
-            </Link>
-          ),
+          title: 'Home',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="chat"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Chat',
+          tabBarIcon: ({ color }) => <TabBarIcon name="inbox" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="coaching"
+        options={{
+          title: 'Coaching',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user-circle" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="resources"
+        options={{
+          title: 'Resources',
+          tabBarIcon: ({ color }) => <TabBarIcon name="file" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
     </Tabs>
   );
 }
+
+// headerRight: () => (
+//   <Link href="/modal" asChild>
+//     <HeaderButton />
+//   </Link>
+// ),

@@ -1,16 +1,51 @@
 import { useFonts } from 'expo-font';
 import { router, Slot, SplashScreen, Stack } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TamaguiProvider } from 'tamagui';
 
 import config from '../tamagui.config';
 import { FontAwesome } from '@expo/vector-icons';
+import { supabase } from '~/utils/supabase';
+import { showErrorAlert } from '~/utils';
+import useUserStore from '~/stores/useUser';
 
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
+};
+
+const InitialLayout = () => {
+  const { setUser } = useUserStore();
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session?.user) {
+        router.replace('/(public)/signin');
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', session?.user?.id)
+        .single();
+
+      if (error) {
+        showErrorAlert(error);
+        router.replace('/(public)/signin');
+        supabase.auth.signOut();
+        return;
+      }
+
+      setUser(data);
+
+      router.push('/(auth)/(tabs)/home/');
+    });
+  }, []);
+
+  return <Slot />;
 };
 
 export default function RootLayout() {
@@ -24,14 +59,6 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  const InitialLayout = () => {
-    useEffect(() => {
-      router.replace('/');
-    });
-
-    return <Slot />;
-  };
-
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -42,9 +69,7 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={config}>
-      <Stack>
-        <InitialLayout />
-      </Stack>
+      <InitialLayout />
     </TamaguiProvider>
   );
 }
