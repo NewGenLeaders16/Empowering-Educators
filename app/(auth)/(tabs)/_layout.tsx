@@ -30,7 +30,7 @@ export default function TabLayout() {
         name="coaching"
         options={{
           title: 'Coaching',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
         }}
       />
       <Tabs.Screen

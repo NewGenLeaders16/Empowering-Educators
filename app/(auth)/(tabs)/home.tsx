@@ -1,5 +1,10 @@
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
+import { router } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Text, View, XStack } from 'tamagui';
@@ -42,7 +47,9 @@ export default function Home() {
               Open a coaching room
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ width: '42%', height: 200 }}>
+          <TouchableOpacity
+            style={{ width: '42%', height: 200 }}
+            onPress={() => router.push('/(auth)/(tabs)/profile')}>
             <View
               w={'100%'}
               ai={'center'}
@@ -58,7 +65,9 @@ export default function Home() {
           </TouchableOpacity>
         </XStack>
         <XStack w="100%" space="$5" mt="$6" ai={'center'} jc={'center'}>
-          <TouchableOpacity style={{ width: '42%', height: 200 }}>
+          <TouchableOpacity
+            style={{ width: '42%', height: 200 }}
+            onPress={() => router.push('/(auth)/(tabs)/coaching')}>
             <View
               w={'100%'}
               ai={'center'}
@@ -72,7 +81,9 @@ export default function Home() {
               Book your next Guided Growth Session
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ width: '42%', height: 200 }}>
+          <TouchableOpacity
+            style={{ width: '42%', height: 200 }}
+            onPress={() => router.push('/(auth)/(tabs)/resources')}>
             <View
               w={'100%'}
               ai={'center'}
@@ -103,11 +114,9 @@ export default function Home() {
               disappearsOnIndex={-1}
             />
           )}>
-          <BottomSheetScrollView
-            style={{ flex: 1, paddingHorizontal: 16, paddingTop: 20 }}
-            contentContainerStyle={{ paddingBottom: 30 }}>
+          <BottomSheetView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 20 }}>
             <SheetChatComponent />
-          </BottomSheetScrollView>
+          </BottomSheetView>
         </BottomSheet>
       </View>
     </WrapperContainer>

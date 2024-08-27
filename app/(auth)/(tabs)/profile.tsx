@@ -13,6 +13,7 @@ import { supabase } from '~/utils/supabase';
 import useUserStore from '~/stores/useUser';
 import { useState } from 'react';
 import colors from '~/constants/colors';
+import { showErrorAlert } from '~/utils';
 
 interface ProfileFormProps {
   email: string;
@@ -48,6 +49,8 @@ export default function Profile() {
       throw userError;
     }
 
+    console.log(userData, 'UserData', userId, name);
+
     return userData;
   };
 
@@ -57,11 +60,10 @@ export default function Profile() {
       let authData;
       let authError;
 
-      if (data?.email !== user?.email) {
-        ({ data: authData, error: authError } = await supabase.auth.updateUser({
-          email: data?.email,
-          ...(data?.password && { password: data?.password }),
-        }));
+      if (data?.password) {
+        const { error: authError } = await supabase.auth.updateUser({
+          password: data?.password,
+        });
 
         console.log(authData, authError, 'wtf');
 
@@ -70,12 +72,13 @@ export default function Profile() {
         }
       }
 
-      const userId = authData?.user?.id || user?.id!;
-      const userData = await updateUserInDatabase(userId, data?.name, authData?.user?.email);
+      const userId = user?.id!;
+      const userData = await updateUserInDatabase(userId, data?.name);
 
       setUser(userData);
+      setFormLoading(false);
     } catch (error: any) {
-      console.log(error?.message);
+      showErrorAlert(error);
     } finally {
       setFormLoading(false);
     }
@@ -196,10 +199,22 @@ export default function Profile() {
             <ValidateInput name="password" control={control} placeholder="Enter new password" />
           </View>
           <View borderBottomColor={'#e5e5e5'} borderBottomWidth={1} px="$4" py="$4.5">
-            <Text mb="$2" fontFamily={'$body'} fontSize={16} fontWeight={'700'}>
+            <Text
+              mb="$2"
+              fontFamily={'$body'}
+              fontSize={16}
+              fontWeight={'700'}
+              color={'$primary_grey'}>
               Email
             </Text>
-            <ValidateInput name="email" control={control} placeholder="Enter your email" />
+            <ValidateInput
+              name="email"
+              control={control}
+              placeholder="Enter your email"
+              disabled
+              bg={'$gray2Light'}
+              color={'$primary_grey'}
+            />
           </View>
           <View borderBottomColor={'#e5e5e5'} borderBottomWidth={1} px="$4" py="$4.5">
             <Text mb="$2" fontFamily={'$body'} fontSize={16} fontWeight={'700'}>
@@ -219,7 +234,14 @@ export default function Profile() {
               </Text>
             )}
           </Button>
-          <Button borderRadius={6} w={160} bg="$primary_yellow">
+          <Button
+            borderRadius={6}
+            w={160}
+            bg="$primary_yellow"
+            onPress={async () => {
+              await supabase.auth.signOut();
+              setUser(null);
+            }}>
             <Text fontSize={16} fontFamily="$body" color="$primary_blue">
               SIGN OUT
             </Text>

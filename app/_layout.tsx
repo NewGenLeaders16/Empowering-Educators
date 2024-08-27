@@ -9,6 +9,7 @@ import { supabase } from '~/utils/supabase';
 import { showErrorAlert } from '~/utils';
 import useUserStore from '~/stores/useUser';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AppProvider } from '~/context/ChatContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -72,9 +73,11 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={config}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <InitialLayout />
-      </GestureHandlerRootView>
+      <AppProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <InitialLayout />
+        </GestureHandlerRootView>
+      </AppProvider>
     </TamaguiProvider>
   );
 }
