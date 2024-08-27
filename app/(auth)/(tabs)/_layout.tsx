@@ -10,6 +10,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: colors.light.primary_yellow,
         tabBarInactiveTintColor: colors.light.primary_grey,
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="home"
@@ -29,14 +30,14 @@ export default function TabLayout() {
         name="coaching"
         options={{
           title: 'Coaching',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user-circle" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
       <Tabs.Screen
         name="resources"
         options={{
           title: 'Resources',
-          tabBarIcon: ({ color }) => <TabBarIcon name="file" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="file1" color={color} />,
         }}
       />
       <Tabs.Screen

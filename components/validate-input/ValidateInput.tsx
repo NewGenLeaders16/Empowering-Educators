@@ -1,11 +1,11 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Input, Text, YStack } from 'tamagui';
+import { Input, InputProps, Text, YStack } from 'tamagui';
 
-interface ValidateInputProps {
+interface ValidateInputProps extends InputProps {
   name: string;
   control: any;
-  label: string;
+  label?: string;
   placeholder?: string;
   secureTextEntry?: boolean;
   rules?: object;
@@ -18,10 +18,11 @@ const ValidateInput: React.FC<ValidateInputProps> = ({
   placeholder,
   secureTextEntry = false,
   rules = {},
+  ...props
 }) => {
   return (
     <YStack space="$2">
-      <Text fontFamily="$body">{label}</Text>
+      {label && <Text fontFamily="$body">{label}</Text>}
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
@@ -37,6 +38,7 @@ const ValidateInput: React.FC<ValidateInputProps> = ({
               paddingHorizontal="$3"
               paddingVertical="$2"
               fontFamily="$body"
+              {...props}
             />
             {error && (
               <Text mt="$1" color="red">

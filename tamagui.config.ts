@@ -84,12 +84,6 @@ export const Subtitle = styled(SizableText, {
 export const Button = styled(ButtonTamagui, {
   backgroundColor: '$primary_yellow',
   borderRadius: 28,
-  hoverStyle: {
-    backgroundColor: '$primary_yellow',
-  },
-  pressStyle: {
-    backgroundColor: '$primary_yellow',
-  },
   maxWidth: 500,
 
   // Shaddows

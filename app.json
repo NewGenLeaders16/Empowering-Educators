@@ -3,7 +3,7 @@
     "name": "empowering-educators",
     "slug": "empowering-educators",
     "version": "1.0.0",
-    "scheme": "empowering-educators",
+    "scheme": "com.empowering-educators",
     "web": {
       "bundler": "metro",
       "output": "static",

@@ -8,6 +8,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { supabase } from '~/utils/supabase';
 import { showErrorAlert } from '~/utils';
 import useUserStore from '~/stores/useUser';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,7 +21,7 @@ const InitialLayout = () => {
   const { setUser } = useUserStore();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!session?.user) {
         router.replace('/(public)/signin');
         return;
@@ -41,8 +42,10 @@ const InitialLayout = () => {
 
       setUser(data);
 
-      router.push('/(auth)/(tabs)/home/');
+      router.push('/(auth)/(tabs)/home');
     });
+
+    return () => data.subscription.unsubscribe();
   }, []);
 
   return <Slot />;
@@ -69,7 +72,9 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={config}>
-      <InitialLayout />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <InitialLayout />
+      </GestureHandlerRootView>
     </TamaguiProvider>
   );
 }
