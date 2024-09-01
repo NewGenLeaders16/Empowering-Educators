@@ -1,11 +1,8 @@
 import { AntDesign } from '@expo/vector-icons';
 import { router, Stack } from 'expo-router';
 import colors from '~/constants/colors';
-import useUserStore from '~/stores/useUser';
 
-export default function CoachingLayout() {
-  const { user } = useUserStore();
-
+export default function ResourcesLayout() {
   return (
     <Stack
       screenOptions={{
@@ -19,12 +16,10 @@ export default function CoachingLayout() {
           />
         ),
       }}>
-      <Stack.Screen
-        name="index"
-        options={{ title: user?.role === 'coach' ? 'Booked Coachings' : 'Coaches' }}
-      />
-
-      <Stack.Screen name="[id]" />
+      <Stack.Screen name="index" options={{ title: 'NewGen Resources' }} />
+      <Stack.Screen name="addResource" options={{ title: 'Add Resource' }} />
+      <Stack.Screen name="pdf" options={{ title: 'PDF Viewer' }} />
+      <Stack.Screen name="[id]" options={{ title: 'Resource Details' }} />
     </Stack>
   );
 }

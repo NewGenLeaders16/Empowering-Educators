@@ -34,12 +34,11 @@ export default function Profile() {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
 
-  const updateUserInDatabase = async (userId: string, name: string, email?: string) => {
+  const updateUserInDatabase = async (userId: string, name: string) => {
     const { data: userData, error: userError } = await supabase
       .from('users')
       .update({
         name,
-        ...(email && { email }),
       })
       .eq('id', userId)
       .select('*')
@@ -57,15 +56,16 @@ export default function Profile() {
   const updateProfile: SubmitHandler<ProfileFormProps> = async (data) => {
     try {
       setFormLoading(true);
-      let authData;
-      let authError;
 
       if (data?.password) {
         const { error: authError } = await supabase.auth.updateUser({
           password: data?.password,
+          data: {
+            full_name: data?.name,
+          },
         });
 
-        console.log(authData, authError, 'wtf');
+        console.log(authError, 'wtf');
 
         if (authError) {
           throw authError;

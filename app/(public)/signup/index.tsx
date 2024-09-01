@@ -8,10 +8,11 @@ import ValidateInput from '~/components/validate-input/ValidateInput';
 import colors from '~/constants/colors';
 import useUserStore from '~/stores/useUser';
 import { Button as FilledButton } from '~/tamagui.config';
-import { showErrorAlert } from '~/utils';
+import { axiosClient, showErrorAlert } from '~/utils';
 import { supabase } from '~/utils/supabase';
 
 interface FormData {
+  name: string;
   email: string;
   password: string;
 }
@@ -31,6 +32,11 @@ const SignUp: React.FC = () => {
     const { data: userData, error: userError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
+      options: {
+        data: {
+          full_name: data.name,
+        },
+      },
     });
 
     if (userError) {
@@ -53,6 +59,8 @@ const SignUp: React.FC = () => {
       return;
     }
 
+    await axiosClient.get(`registerStreamUser?id=${user?.id}`);
+
     setUser(user ?? null);
   };
 
@@ -71,7 +79,15 @@ const SignUp: React.FC = () => {
           mt="$12">
           Empowering Educators
         </Text>
-        <View bg="white" borderRadius="$7" px="$3" py="$7" minWidth="90%" mt="$6" minHeight={400}>
+        <View
+          bg="white"
+          borderRadius="$7"
+          px="$3"
+          pt="$7"
+          py="$5"
+          minWidth="90%"
+          mt="$6"
+          minHeight={400}>
           <Text
             textAlign="center"
             fontSize="$9"
@@ -81,6 +97,13 @@ const SignUp: React.FC = () => {
             Sign Up
           </Text>
           <YStack space="$3" mt="$4">
+            <ValidateInput
+              name="name"
+              control={control}
+              label="Name"
+              placeholder="Enter your name"
+              rules={{ required: 'Name is required' }}
+            />
             <ValidateInput
               name="email"
               control={control}
@@ -99,7 +122,7 @@ const SignUp: React.FC = () => {
                 minLength: { value: 6, message: 'Password must be at least 6 characters long' },
               }}
             />
-            <FilledButton onPress={handleSubmit(onSubmit)} mt="$6">
+            <FilledButton onPress={handleSubmit(onSubmit)} mt="$2">
               {signupLoading ? (
                 <ActivityIndicator color={colors.light.black} size="small" />
               ) : (
@@ -108,7 +131,7 @@ const SignUp: React.FC = () => {
                 </Text>
               )}
             </FilledButton>
-            <Button mt="$5" py="$0" h={30} onPress={() => router.push('/(public)/signin')}>
+            <Button mt="$2" py="$0" h={30} onPress={() => router.push('/(public)/signin')}>
               <Text fontSize={16} fontFamily="$body" color="$primary_blue">
                 ALREADY HAVE AN ACCOUNT ?
               </Text>
