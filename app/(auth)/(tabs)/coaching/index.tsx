@@ -174,7 +174,7 @@ export default function Coaching() {
                     onPress={() =>
                       router.push({
                         pathname: '/(auth)/(tabs)/coaching/[id]',
-                        params: { id: item.id },
+                        params: { id: item.id, userName: item.name },
                       })
                     }>
                     <XStack w={'100%'} space="$2.5" ai={'center'} py="$3">

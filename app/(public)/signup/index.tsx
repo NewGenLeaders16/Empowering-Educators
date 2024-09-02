@@ -10,6 +10,7 @@ import useUserStore from '~/stores/useUser';
 import { Button as FilledButton } from '~/tamagui.config';
 import { axiosClient, showErrorAlert } from '~/utils';
 import { supabase } from '~/utils/supabase';
+import * as Linking from 'expo-linking';
 
 interface FormData {
   name: string;
@@ -63,6 +64,10 @@ const SignUp: React.FC = () => {
 
     setUser(user ?? null);
   };
+
+  const url = Linking.useURL();
+
+  console.log('signupLoading', url);
 
   return (
     <ScrollView

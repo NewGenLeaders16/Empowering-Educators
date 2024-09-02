@@ -6,7 +6,7 @@ const showErrorAlert = (error: any) => {
 };
 
 const axiosClient = axios.create({
-  baseURL: 'http://192.168.100.63:3000/api/',
+  baseURL: 'https://empowering-educators-backend.vercel.app/api/',
 });
 
 export { showErrorAlert, axiosClient };

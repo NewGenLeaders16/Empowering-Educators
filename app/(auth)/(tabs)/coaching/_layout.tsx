@@ -25,6 +25,8 @@ export default function CoachingLayout() {
       />
 
       <Stack.Screen name="[id]" />
+      <Stack.Screen name="successBooking" options={{ title: '' }} />
+      <Stack.Screen name="bookedSessions" options={{ title: '' }} />
     </Stack>
   );
 }

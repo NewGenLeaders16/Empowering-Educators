@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { Button, ScrollView, Text, View, YStack } from 'tamagui';
@@ -11,6 +11,7 @@ import { Button as FilledButton } from '~/tamagui.config';
 import { showErrorAlert } from '~/utils';
 import { supabase } from '~/utils/supabase';
 import * as Linking from 'expo-linking';
+import { useFocusEffect } from 'expo-router';
 
 interface FormData {
   password: string;
@@ -18,6 +19,15 @@ interface FormData {
 }
 
 const ResetPassword: React.FC = () => {
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        console.log('unmounting');
+        // Sign out the user here if they leave the screen
+      };
+    }, [])
+  );
+
   const { control, handleSubmit } = useForm<FormData>();
 
   const [resetLoading, setResetLoading] = useState(false);
@@ -46,7 +56,7 @@ const ResetPassword: React.FC = () => {
 
   const url = `${Linking.useURL()}`;
 
-  console.log(url, 'url');
+  console.log(url, 'url ewf0euf');
 
   return (
     <ScrollView

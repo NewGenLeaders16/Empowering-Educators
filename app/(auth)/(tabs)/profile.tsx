@@ -35,6 +35,8 @@ export default function Profile() {
   const [formLoading, setFormLoading] = useState(false);
 
   const updateUserInDatabase = async (userId: string, name: string) => {
+    console.log(userId, 'userId', name, 'name');
+
     const { data: userData, error: userError } = await supabase
       .from('users')
       .update({

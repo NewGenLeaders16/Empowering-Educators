@@ -1,4 +1,4 @@
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
@@ -12,6 +12,7 @@ import SheetChatComponent from '~/components/screen-components/SheetChatComponen
 import ScreenHeader from '~/components/ScreenHeader';
 import WrapperContainer from '~/components/WrapperContainer';
 import colors from '~/constants/colors';
+import useUserStore from '~/stores/useUser';
 import { supabase } from '~/utils/supabase';
 
 export default function Home() {
@@ -20,6 +21,8 @@ export default function Home() {
   const snapPoints = ['50%'];
 
   const memoizedSnapPoints = useMemo(() => snapPoints, [snapPoints]);
+
+  const { user } = useUserStore();
 
   return (
     <WrapperContainer>
@@ -33,7 +36,11 @@ export default function Home() {
         <XStack w="100%" space="$5" mt="$8" ai={'center'} jc={'center'}>
           <TouchableOpacity
             style={{ width: '42%', height: 200 }}
-            onPress={() => bottomSheetRef?.current?.expand()}>
+            onPress={() => {
+              user?.role === 'teacher'
+                ? bottomSheetRef.current?.expand()
+                : router.push('/(auth)/(tabs)/chat');
+            }}>
             <View
               w={'100%'}
               ai={'center'}
@@ -41,10 +48,14 @@ export default function Home() {
               h={150}
               bg={'$primary_yellow'}
               borderRadius={10}>
-              <AntDesign name="plus" size={40} color={colors.light.black} />
+              {user?.role === 'coach' ? (
+                <AntDesign name="message1" size={40} color={colors.light.black} />
+              ) : (
+                <AntDesign name="plus" size={40} color={colors.light.black} />
+              )}
             </View>
             <Text mt="$3" textAlign="center" fontFamily={'$body'} fontSize={18} fontWeight={'500'}>
-              Open a coaching room
+              {user?.role === 'coach' ? 'View Chats' : 'Open a coaching room'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -75,10 +86,14 @@ export default function Home() {
               h={150}
               bg={'$primary_yellow'}
               borderRadius={10}>
-              <MaterialIcons name="assessment" size={40} color="black" />
+              {user?.role === 'coach' ? (
+                <FontAwesome5 name="hands-helping" size={40} color="black" />
+              ) : (
+                <MaterialIcons name="assessment" size={40} color="black" />
+              )}
             </View>
             <Text mt="$3" textAlign="center" fontFamily={'$body'} fontSize={18} fontWeight={'500'}>
-              Book your next Guided Growth Session
+              {user?.role === 'teacher' ? 'Book a Guided Growth Session' : 'View Booked Coachings'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

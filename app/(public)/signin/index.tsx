@@ -27,6 +27,8 @@ interface FormDataForgotPassword {
 const redirectTo = makeRedirectUri();
 
 const createSessionFromUrl = async (url: string) => {
+  console.log(url, 'url');
+
   const { params, errorCode } = QueryParams.getQueryParams(url);
 
   if (errorCode) throw new Error(errorCode);
@@ -97,8 +99,10 @@ const SignIn: React.FC = () => {
 
     setForgotPasswordLoading(true);
 
+    console.log(redirectTo, `${redirectTo}/reset-password`);
+
     const { error } = await supabase.auth.resetPasswordForEmail(data?.email, {
-      redirectTo: redirectTo,
+      redirectTo: `${redirectTo}`,
     });
 
     if (error) {
@@ -122,9 +126,7 @@ const SignIn: React.FC = () => {
 
   if (url) createSessionFromUrl(url);
 
-  // useEffect(() => {
-  //   router.replace('/(public)/reset-password');
-  // }, []);
+  console.log(url, 'url');
 
   return (
     <>

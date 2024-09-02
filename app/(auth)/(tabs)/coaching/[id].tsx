@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -8,7 +8,7 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import { Circle, ScrollView, Text, View, XStack } from 'tamagui';
+import { Circle, ScrollView, Text, View, XStack, Button as TMButton } from 'tamagui';
 import colors from '~/constants/colors';
 import useUserStore from '~/stores/useUser';
 import { User } from '~/types';
@@ -26,7 +26,17 @@ export default function CoachDetails() {
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  const { id } = useLocalSearchParams();
+  const [bookingsCount, setBookingCounts] = useState(0);
+
+  const { id, userName } = useLocalSearchParams();
+
+  const { setOptions } = useNavigation();
+
+  useEffect(() => {
+    setOptions({
+      title: userName,
+    });
+  }, [userName]);
 
   useEffect(() => {
     if (!id) return;
@@ -34,8 +44,17 @@ export default function CoachDetails() {
       try {
         setLoading(true);
         const { data, error } = await supabase.from('users').select('*').eq('id', id).single();
-        if (error) {
-          throw error;
+
+        const { count, error: bookError } = await supabase
+          .from('coachings')
+          .select('*', { count: 'exact', head: true })
+          .eq('coach_id', id)
+          .eq('teacher_id', user?.id!);
+
+        setBookingCounts(count ?? 0);
+
+        if (error || bookError) {
+          throw error ?? bookError;
         }
 
         setCoach(data);
@@ -73,11 +92,15 @@ export default function CoachDetails() {
 
     setBookingLoading(true);
 
+    const hours = selectedTime.getHours().toString().padStart(2, '0');
+    const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
+    const formattedTime = `${hours}:${minutes}`;
+
     const { data, error } = await supabase.from('coachings').insert({
       coach_id: coach?.id,
       teacher_id: user?.id,
       scheduled_date: selectedDate,
-      scheduled_time: '10:00',
+      scheduled_time: formattedTime,
       formatted_timestamp: selectedTime?.toISOString(),
     });
 
@@ -89,9 +112,10 @@ export default function CoachDetails() {
 
     setBookingLoading(false);
 
-    console.log(data, 'Data');
-
-    router.back();
+    router.push({
+      pathname: '/(auth)/(tabs)/coaching/successBooking',
+      params: { coachName: coach?.name },
+    });
   };
 
   return (
@@ -118,7 +142,11 @@ export default function CoachDetails() {
           />
 
           {Platform.OS === 'android' && (
-            <Button mt="$5" bg="$primary_blue" onPress={showDatePicker}>
+            <Button
+              mt="$5"
+              bg="$primary_blue"
+              onPress={showDatePicker}
+              opacity={bookingLoading || bookingsCount >= 3 ? 0.5 : 1}>
               <Text color={'white'} fs={16} ff={'$body'} fontWeight={600}>
                 Select Time
               </Text>
@@ -139,15 +167,36 @@ export default function CoachDetails() {
             onPress={() => {
               bookSession();
             }}
-            disabled={bookingLoading}>
+            disabled={bookingLoading || bookingsCount >= 3}
+            opacity={bookingLoading || bookingsCount >= 3 ? 0.5 : 1}>
             {bookingLoading ? (
               <ActivityIndicator color={colors.light.primary_blue} size={'small'} />
             ) : (
               <Text fs={16} ff={'$body'} fontWeight={600}>
-                Book Coaching
+                {bookingsCount >= 3 ? 'You have reached the maximum limit' : 'Book Session'}
               </Text>
             )}
           </Button>
+          {bookingsCount > 0 && (
+            <View ai={'center'} jc={'center'} mt="$2">
+              <TMButton
+                borderRadius={6}
+                w={200}
+                bg="transparent"
+                onPress={() => {
+                  router.push({
+                    pathname: '/(auth)/(tabs)/coaching/bookedSessions',
+                    params: {
+                      id: coach?.id,
+                    },
+                  });
+                }}>
+                <Text fontSize={16} fontFamily="$body" color="$primary_blue">
+                  View Bookings
+                </Text>
+              </TMButton>
+            </View>
+          )}
         </ScrollView>
       )}
     </>

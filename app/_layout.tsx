@@ -10,19 +10,31 @@ import { showErrorAlert } from '~/utils';
 import useUserStore from '~/stores/useUser';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProvider } from '~/context/ChatContext';
+import * as Linking from 'expo-linking';
 
 SplashScreen.preventAutoHideAsync();
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
+// export const unstable_settings = {
+//   // Ensure that reloading on `/modal` keeps a back button present.
+//   initialRouteName: '(tabs)',
+// };
 
 const InitialLayout = () => {
   const { setUser } = useUserStore();
 
+  // useEffect(() => {
+  //   Linking.addEventListener('url', ({ url }) => {
+  //     const match = url.match(new RegExp(`^com.empowering-educators://(.*)`));
+  //     console.log(match, 'match');
+  //     if (match) {
+  //       router.push(`/(public)/${match[1]}`);
+  //     }
+  //   });
+  // }, []);
+
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(event, 'event');
       if (!session?.user) {
         router.replace('/(public)/signin');
         return;
