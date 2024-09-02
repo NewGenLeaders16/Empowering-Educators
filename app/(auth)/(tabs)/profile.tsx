@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, Image, Alert } from 'react-native';
 import { Circle, ScrollView, Text, View, YStack } from 'tamagui';
 import ScreenHeader from '~/components/ScreenHeader';
 import ValidateInput from '~/components/validate-input/ValidateInput';
@@ -59,6 +59,14 @@ export default function Profile() {
     try {
       setFormLoading(true);
 
+      const userId = user?.id!;
+      const userData = await updateUserInDatabase(userId, data?.name);
+
+      setUser(userData);
+      setFormLoading(false);
+
+      Alert.alert('Success', 'Profile updated successfully');
+
       if (data?.password) {
         const { error: authError } = await supabase.auth.updateUser({
           password: data?.password,
@@ -73,12 +81,6 @@ export default function Profile() {
           throw authError;
         }
       }
-
-      const userId = user?.id!;
-      const userData = await updateUserInDatabase(userId, data?.name);
-
-      setUser(userData);
-      setFormLoading(false);
     } catch (error: any) {
       showErrorAlert(error);
     } finally {

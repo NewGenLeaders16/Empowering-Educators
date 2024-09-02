@@ -8,7 +8,7 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import { Circle, ScrollView, Text, View, XStack, Button as TMButton } from 'tamagui';
+import { Circle, ScrollView, Text, View, XStack, Button as TMButton, YStack } from 'tamagui';
 import colors from '~/constants/colors';
 import useUserStore from '~/stores/useUser';
 import { User } from '~/types';
@@ -154,12 +154,18 @@ export default function CoachDetails() {
           )}
 
           {Platform.OS === 'ios' && (
-            <DateTimePicker
-              value={selectedTime}
-              mode={'time'}
-              is24Hour={true}
-              onChange={onChange}
-            />
+            <YStack space="$3" ai={'flex-start'} jc="flex-start" dsp={'flex'} mt="$4">
+              <Text fontSize={16} fontFamily="$body" color="$gray" ml="$2.5">
+                Select Time
+              </Text>
+              <DateTimePicker
+                value={selectedTime}
+                mode={'time'}
+                is24Hour={true}
+                onChange={onChange}
+                // disabled={bookingLoading || bookingsCount >= 3}
+              />
+            </YStack>
           )}
 
           <Button

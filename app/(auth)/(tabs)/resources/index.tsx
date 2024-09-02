@@ -1,12 +1,13 @@
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Touchable, TouchableOpacity } from 'react-native';
 import { Text, View } from 'tamagui';
 import useUserStore from '~/stores/useUser';
 import { Button } from '~/tamagui.config';
 import { Resources } from '~/types';
 import { supabase } from '~/utils/supabase';
+import { FlashList } from '@shopify/flash-list';
 
 export default function ResourcesPage() {
   const { user } = useUserStore();
@@ -63,7 +64,7 @@ export default function ResourcesPage() {
     fetchResources();
   }, []);
 
-  const RenderItem = ({ item }: { item: Resources }) => {
+  const RenderItem = useCallback(({ item }: { item: Resources }) => {
     return (
       <TouchableOpacity
         onPress={() =>
@@ -71,7 +72,8 @@ export default function ResourcesPage() {
             pathname: '/(auth)/(tabs)/resources/[id]',
             params: { id: item.id },
           })
-        }>
+        }
+        key={item.id}>
         <View
           bg={'white'}
           w="100%"
@@ -102,7 +104,7 @@ export default function ResourcesPage() {
         </View>
       </TouchableOpacity>
     );
-  };
+  }, []);
 
   return (
     <View flex={1} bg={'$white'} px="$5">
@@ -121,7 +123,7 @@ export default function ResourcesPage() {
         </Button>
       )}
 
-      <FlatList
+      <FlashList
         data={resources}
         renderItem={({ item }) => <RenderItem item={item} />}
         keyExtractor={(item) => item.id}
@@ -129,6 +131,7 @@ export default function ResourcesPage() {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
         showsVerticalScrollIndicator={false}
+        estimatedItemSize={243}
         // initialNumToRender={3}
         onRefresh={onRefresh}
         refreshing={refreshing}
