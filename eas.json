@@ -1,0 +1,35 @@
+{
+  "cli": {
+    "version": ">= 11.0.3"
+  },
+  "build": {
+    "development": {
+      "extends": "production",
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development",
+      "env": {
+        "ENV": "development"
+      }
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal",
+      "channel": "preview",
+      "env": {
+        "ENV": "production"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production",
+      "distribution": "store",
+      "env": {
+        "ENV": "production"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

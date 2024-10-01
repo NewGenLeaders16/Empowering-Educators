@@ -29,7 +29,7 @@ export default function Home() {
       <ScreenHeader hideIcon />
       <View flex={1} bg={'white'} px="$5">
         <Text fontSize={18} fontFamily={'$body'} fontWeight={'500'} mt="$8">
-          Below is your NextGen Portal. Here you can open a coaching room with your NextGen Coach,
+          Below is your NewGen Portal. Here you can open a coaching room with your NextGen Coach,
           book your next Guided Growth Session and access our resource portal
         </Text>
 

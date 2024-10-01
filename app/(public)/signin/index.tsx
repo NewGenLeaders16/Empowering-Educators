@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { Button, ScrollView, Text, View, YStack } from 'tamagui';
@@ -26,33 +26,13 @@ interface FormDataForgotPassword {
 
 const redirectTo = makeRedirectUri();
 
-const createSessionFromUrl = async (url: string) => {
-  console.log(url, 'url');
-
-  const { params, errorCode } = QueryParams.getQueryParams(url);
-
-  if (errorCode) throw new Error(errorCode);
-  const { access_token, refresh_token } = params;
-
-  if (!access_token) return;
-
-  const { data, error } = await supabase.auth.setSession({
-    access_token,
-    refresh_token,
-  });
-  if (error) throw error;
-
-  router.replace('/(auth)/(tabs)/home');
-
-  return data.session;
-};
-
 const SignIn: React.FC = () => {
   const { control, handleSubmit } = useForm<FormData>();
   const {
     control: forgotPasswordControl,
     handleSubmit: forgotPasswordHandleSubmit,
     getValues,
+    formState: { isValid },
   } = useForm<FormDataForgotPassword>();
 
   const [signinLoading, setSignInLoading] = useState(false);
@@ -62,16 +42,24 @@ const SignIn: React.FC = () => {
   const { setUser } = useUserStore();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
-
     setSignInLoading(true);
+
+    // const { data: userData, error: userError } = await supabase.auth.signInWithOtp({
+    //   email: data.email,
+    //   options: {
+    //     emailRedirectTo: redirectTo,
+    //   },
+    // });
 
     const { data: userData, error: userError } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
 
+    console.log(userData, 'userData');
+
     if (userError) {
+      console.log(userError, 'User Error');
       showErrorAlert(userError);
       setSignInLoading(false);
       return;
@@ -95,11 +83,9 @@ const SignIn: React.FC = () => {
   };
 
   const onForgotPassword: SubmitHandler<FormDataForgotPassword> = async (data) => {
-    console.log(data);
+    console.log(data, 'Data');
 
     setForgotPasswordLoading(true);
-
-    console.log(redirectTo, `${redirectTo}/reset-password`);
 
     const { error } = await supabase.auth.resetPasswordForEmail(data?.email, {
       redirectTo: `${redirectTo}`,
@@ -121,12 +107,6 @@ const SignIn: React.FC = () => {
   const snapPoints = ['100%'];
 
   const memoizedSnapPoints = useMemo(() => snapPoints, [snapPoints]);
-
-  const url = Linking.useURL();
-
-  if (url) createSessionFromUrl(url);
-
-  console.log(url, 'url');
 
   return (
     <>
@@ -161,17 +141,16 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your email"
                 rules={{ required: 'Email is required' }}
               />
+
               <ValidateInput
                 name="password"
                 control={control}
                 label="Password"
-                placeholder="Enter your password"
+                placeholder="Enter password..."
+                rules={{ required: 'Password is required' }}
                 secureTextEntry
-                rules={{
-                  required: 'Password is required',
-                  minLength: { value: 6, message: 'Password must be at least 6 characters long' },
-                }}
               />
+
               <OutlinedButton onPress={handleSubmit(onSubmit)} mt="$6">
                 {signinLoading ? (
                   <ActivityIndicator color={colors.light.primary_yellow} size="small" />
@@ -181,11 +160,13 @@ const SignIn: React.FC = () => {
                   </Text>
                 )}
               </OutlinedButton>
+
               <Button mt="$5" py="$0" h={30} onPress={() => bottomSheetRef.current?.expand()}>
                 <Text fontSize={16} fontFamily="$body" color="$primary_blue">
                   FORGOT PASSWORD ?
                 </Text>
               </Button>
+
               <Button onPress={() => router.push('/(public)/signup')} mt="$2" h={30}>
                 <Text fontSize={16} fontFamily="$body" color="$primary_blue">
                   SIGN UP
@@ -274,3 +255,5 @@ const SignIn: React.FC = () => {
 };
 
 export default SignIn;
+
+// re_RTxYKwxA_6bpz9cyVES3XdpzrShZDAQno;

@@ -6,7 +6,8 @@ import { axiosClient, showErrorAlert } from '~/utils';
 import useUserStore from '~/stores/useUser';
 import { AxiosError } from 'axios';
 
-const chatClient = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY!);
+// const chatClient = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY!);
+const chatClient = StreamChat.getInstance('rs78njjjpaye');
 
 export const useChatClient = () => {
   const [clientIsReady, setClientIsReady] = useState(false);
@@ -14,18 +15,21 @@ export const useChatClient = () => {
   const { user } = useUserStore();
 
   useEffect(() => {
+    if (!user || clientIsReady) return;
+
     const setupClient = async () => {
       try {
         const { data } = await axiosClient.get(`getStreamToken?id=${user?.id}`);
 
         if (data?.token) {
-          chatClient.connectUser(
+          const connection = await chatClient.connectUser(
             {
               id: user?.id!,
               name: user?.name!,
             },
             data?.token
           );
+
           setClientIsReady(true);
         }
       } catch (error) {
@@ -43,7 +47,7 @@ export const useChatClient = () => {
     if (!chatClient.userID) {
       setupClient();
     }
-  }, []);
+  }, [user]);
 
   return {
     clientIsReady,

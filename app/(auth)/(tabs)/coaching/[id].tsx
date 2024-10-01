@@ -163,7 +163,7 @@ export default function CoachDetails() {
                 mode={'time'}
                 is24Hour={true}
                 onChange={onChange}
-                // disabled={bookingLoading || bookingsCount >= 3}
+                disabled={bookingLoading || bookingsCount >= 3}
               />
             </YStack>
           )}

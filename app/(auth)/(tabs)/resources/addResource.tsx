@@ -15,6 +15,7 @@ import { supabase } from '~/utils/supabase';
 import { decode } from 'base64-arraybuffer';
 import { router } from 'expo-router';
 import colors from '~/constants/colors';
+import { useAppContext } from '~/context/ChatContext';
 
 interface FormValues {
   title: string;
@@ -34,6 +35,8 @@ export default function AddResource() {
   const [uploadedThumbnail, setUploadedThumbnail] = useState<any>(null);
 
   const [loading, setLoading] = useState(false);
+
+  const { selectedIds } = useAppContext();
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data, 'Data');
@@ -136,7 +139,9 @@ export default function AddResource() {
         .from('resources')
         .getPublicUrl(thumbnailData?.path);
 
-      const { data, error } = await supabase.from('resources').insert({
+      const selectedUsers = Array.from(selectedIds);
+
+      const uploadObject = {
         title: formData.title,
         description: formData.description,
         main_goal: formData.mainGoal,
@@ -145,13 +150,26 @@ export default function AddResource() {
         thumbnail_url: thumbnailFileUrl?.publicUrl,
         file_url: docFileUrl?.publicUrl,
         creator_id: user?.id,
-      });
+      };
 
-      if (error) {
-        throw error;
+      if (selectedUsers.length === 0) {
+        const { error } = await supabase.from('resources').insert(uploadObject);
+
+        if (error) {
+          throw error;
+        }
+      } else {
+        const { error } = await supabase.from('resources').insert(
+          selectedUsers.map((id) => ({
+            ...uploadObject,
+            teacher_id: id as string,
+          }))
+        );
+
+        if (error) {
+          throw error;
+        }
       }
-
-      console.log(data, 'Data');
 
       router.back();
     } catch (error) {
@@ -161,6 +179,8 @@ export default function AddResource() {
       setLoading(false);
     }
   };
+
+  console.log(Array.from(selectedIds), 'SelectedIds');
 
   return (
     <ScrollView flex={1} bg={'$white'} px="$5" contentContainerStyle={{ paddingBottom: 10 }}>
@@ -254,6 +274,28 @@ export default function AddResource() {
           control={control}
           placeholder="Enter Topics Covered..."
         />
+
+        <YStack space="$2">
+          <Text fontFamily="$body">Select Users For this resource</Text>
+          <TouchableOpacity onPress={() => router.push('/(auth)/(tabs)/resources/resourceUsers')}>
+            <View
+              ai={'center'}
+              jc={'space-between'}
+              flexDirection="row"
+              borderWidth={1}
+              borderColor={'#ccc'}
+              paddingHorizontal="$3"
+              paddingVertical="$3"
+              borderRadius={'$5'}>
+              <Text fontFamily="$body">
+                {selectedIds?.size > 0
+                  ? `${selectedIds?.size} ${selectedIds?.size > 1 ? 'Users' : 'User'} Selected`
+                  : 'Select Users'}
+              </Text>
+              <AntDesign name="arrowright" />
+            </View>
+          </TouchableOpacity>
+        </YStack>
 
         <Button onPress={handleSubmit(createResource)} mt="$3" disabled={loading}>
           {loading ? (

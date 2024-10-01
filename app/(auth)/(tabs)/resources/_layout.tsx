@@ -18,6 +18,7 @@ export default function ResourcesLayout() {
       }}>
       <Stack.Screen name="index" options={{ title: 'NewGen Resources' }} />
       <Stack.Screen name="addResource" options={{ title: 'Add Resource' }} />
+      <Stack.Screen name="resourceUsers" options={{ title: 'Users' }} />
       <Stack.Screen name="pdf" options={{ title: 'PDF Viewer' }} />
       <Stack.Screen name="[id]" options={{ title: 'Resource Details' }} />
     </Stack>

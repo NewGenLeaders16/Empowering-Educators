@@ -1,7 +1,9 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import { Image } from 'tamagui';
 import { Circle, ScrollView, Text, View, XStack } from 'tamagui';
+import colors from '~/constants/colors';
 import useUserStore from '~/stores/useUser';
 import { Coachings } from '~/types';
 import { supabase } from '~/utils/supabase';
@@ -35,7 +37,9 @@ const BookedSessions = () => {
   return (
     <>
       {loading ? (
-        <View flex={1} bg={'white'} px="$5" ai={'center'} jc={'center'}></View>
+        <View flex={1} bg={'white'} px="$5" ai={'center'} jc={'center'}>
+          <ActivityIndicator size="large" color={colors.light.primary_blue} />
+        </View>
       ) : (
         <ScrollView flex={1} px="$5">
           {bookings?.map((item: any) => {

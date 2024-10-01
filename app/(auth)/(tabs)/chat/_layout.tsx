@@ -1,6 +1,5 @@
 import { router, Stack } from 'expo-router';
 import { Text, View } from 'tamagui';
-import { useChatClient } from '~/context/useChatClient';
 import {
   Chat,
   ChannelList,
@@ -16,13 +15,14 @@ import colors from '~/constants/colors';
 import ScreenHeader from '~/components/ScreenHeader';
 import WrapperContainer from '~/components/WrapperContainer';
 import { AntDesign } from '@expo/vector-icons';
+import { useChatClientContext } from '~/context/ChatClientContext';
 
-const chatClient = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY!);
+// const chatClient = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY!);
 
 export default function ChatLayout() {
-  const { clientIsReady } = useChatClient();
+  const { clientIsReady, client } = useChatClientContext();
 
-  if (!clientIsReady) {
+  if (!clientIsReady || !client) {
     return (
       <View bg={'white'} ai={'center'} flex={1} jc={'center'}>
         <ActivityIndicator size={'large'} color={colors.light.primary_blue} />
@@ -32,7 +32,7 @@ export default function ChatLayout() {
 
   return (
     <OverlayProvider>
-      <Chat client={chatClient}>
+      <Chat client={client!}>
         <Stack
           screenOptions={{
             headerBackTitleVisible: false,

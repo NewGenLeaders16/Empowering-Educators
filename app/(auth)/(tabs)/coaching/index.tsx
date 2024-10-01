@@ -14,8 +14,6 @@ export default function Coaching() {
   const [markedDates, setMarkedDates] = useState<any>({});
   const [initialSelectedDate, setInitialSelectedDate] = useState('');
 
-  console.log(markedDates, 'MarkedDates');
-
   const [items, setItems] = useState<any>({});
 
   console.log(items, 'Items');
@@ -156,8 +154,8 @@ export default function Coaching() {
             Book a Guided Growth Session
           </Text>
           <Text fontSize={18} fontFamily={'$body'} fontWeight={'500'} mt="$2" mb="$5">
-            Booking a 1 : 1 session with a NextGen Coaches ensures personalized attention tailored
-            to your specefic journey and goals
+            Booking a 1 : 1 session with a NewGen Coaches ensures personalized attention tailored to
+            your specefic journey and goals
           </Text>
           {loading ? (
             <View>
@@ -182,7 +180,7 @@ export default function Coaching() {
                         {item?.image_url && (
                           <Image
                             source={{ uri: item?.image_url }}
-                            style={{ width: 50, height: 50 }}
+                            style={{ width: 50, height: 50, borderRadius: 100 }}
                           />
                         )}
                       </Circle>

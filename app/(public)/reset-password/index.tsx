@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { router, useLocalSearchParams, usePathname } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { Button, ScrollView, Text, View, YStack } from 'tamagui';
@@ -8,10 +8,15 @@ import ValidateInput from '~/components/validate-input/ValidateInput';
 import colors from '~/constants/colors';
 import useUserStore from '~/stores/useUser';
 import { Button as FilledButton } from '~/tamagui.config';
-import { showErrorAlert } from '~/utils';
+import { axiosClient, showErrorAlert } from '~/utils';
 import { supabase } from '~/utils/supabase';
 import * as Linking from 'expo-linking';
 import { useFocusEffect } from 'expo-router';
+import * as QueryParams from 'expo-auth-session/build/QueryParams';
+import { useAppContext } from '~/context/ChatContext';
+import { err } from 'react-native-svg';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface FormData {
   password: string;
@@ -19,44 +24,83 @@ interface FormData {
 }
 
 const ResetPassword: React.FC = () => {
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        console.log('unmounting');
-        // Sign out the user here if they leave the screen
-      };
-    }, [])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     return () => {
+  //       supabase.auth.signOut().then(() => {
+  //         console.log('signed out');
+  //       });
+  //       // Sign out the user here if they leave the screen
+  //     };
+  //   }, [])
+  // );
 
-  const { control, handleSubmit } = useForm<FormData>();
+  const [userEmail, setUserEmail] = useState('');
 
-  const [resetLoading, setResetLoading] = useState(false);
+  const [full_name, setFull_name] = useState('');
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
+  const createSessionFromUrl = async (url: string) => {
+    const { params, errorCode } = QueryParams.getQueryParams(url);
 
-    setResetLoading(true);
+    if (errorCode) throw new Error(errorCode);
+    const { access_token, refresh_token } = params;
 
-    const { data: userData, error: userError } = await supabase.auth.updateUser({
-      password: data.password,
-    });
-
-    if (userError) {
-      showErrorAlert(userError);
-      setResetLoading(false);
+    if (!access_token) {
+      router.push(`/(public)/signin`);
       return;
     }
 
-    await supabase.auth.signOut();
+    const { data, error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
 
-    setResetLoading(false);
+    if (error) throw error;
 
-    router.push('/(public)/signin');
+    return data;
   };
 
-  const url = `${Linking.useURL()}`;
+  const pathName = usePathname();
 
-  console.log(url, 'url ewf0euf');
+  const { user } = useUserStore();
+
+  const { url } = useLocalSearchParams();
+
+  const { control, handleSubmit } = useForm<FormData>();
+
+  const { setProfileUpdateLoading, profileUpdateLoading, setUpdatePathName, session } =
+    useAppContext();
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      setProfileUpdateLoading(true);
+
+      const { data: axiosData } = await axiosClient.post('resetUserPassword', {
+        // @ts-ignore
+        id: session?.user?.id,
+        password: data.password,
+      });
+
+      AsyncStorage.removeItem('sb-xsmvurpfpaavwhqhbage-auth-token')
+        .then(() => {
+          router.replace('/(public)/signin');
+        })
+        .catch((err) => {
+          console.log(err, 'Error');
+        });
+
+      setProfileUpdateLoading(false);
+    } catch (error) {
+      showErrorAlert(error);
+      console.log(error, 'Error');
+    }
+  };
+
+  if (url) createSessionFromUrl(url as string);
+
+  useEffect(() => {
+    setUpdatePathName(pathName);
+  }, [pathName]);
 
   return (
     <ScrollView
@@ -88,6 +132,7 @@ const ResetPassword: React.FC = () => {
               control={control}
               label="Password"
               placeholder="Enter your password"
+              secureTextEntry
               rules={{
                 required: 'Password is required',
                 minLength: { value: 6, message: 'Password must be at least 6 characters long' },
@@ -104,7 +149,7 @@ const ResetPassword: React.FC = () => {
               }}
             />
             <FilledButton onPress={handleSubmit(onSubmit)} mt="$6">
-              {resetLoading ? (
+              {profileUpdateLoading ? (
                 <ActivityIndicator color={colors.light.black} size="small" />
               ) : (
                 <Text fontSize={16} fontFamily="$body" color="$black">

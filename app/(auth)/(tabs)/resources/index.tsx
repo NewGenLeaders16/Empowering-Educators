@@ -24,11 +24,17 @@ export default function ResourcesPage() {
 
     setLoading(true); // Show loading indicator
 
-    const { data, error } = await supabase
+    const query = supabase
       .from('resources')
       .select('*')
       .order('created_at', { ascending: false })
       .range(page * 10, (page + 1) * 10 - 1); // Fetch 10 items per page
+
+    if (user?.role === 'teacher') {
+      query.or(`teacher_id.is.null,teacher_id.eq.${user?.id}`);
+    }
+
+    const { data, error } = await query;
 
     setLoading(false);
     if (error) {

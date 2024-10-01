@@ -63,6 +63,7 @@ export type Database = {
           file_url: string | null
           id: string
           main_goal: string | null
+          teacher_id: string | null
           thumbnail_url: string | null
           title: string | null
           topics_covered: string | null
@@ -75,6 +76,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           main_goal?: string | null
+          teacher_id?: string | null
           thumbnail_url?: string | null
           title?: string | null
           topics_covered?: string | null
@@ -87,6 +89,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           main_goal?: string | null
+          teacher_id?: string | null
           thumbnail_url?: string | null
           title?: string | null
           topics_covered?: string | null
@@ -95,6 +98,13 @@ export type Database = {
           {
             foreignKeyName: "resources_creator_id_fkey"
             columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resources_teacher_id_fkey"
+            columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]

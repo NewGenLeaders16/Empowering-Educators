@@ -1,5 +1,5 @@
 import { useFonts } from 'expo-font';
-import { router, Slot, SplashScreen, Stack } from 'expo-router';
+import { router, Slot, SplashScreen, Stack, usePathname, useSegments } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { TamaguiProvider } from 'tamagui';
 
@@ -9,8 +9,11 @@ import { supabase } from '~/utils/supabase';
 import { showErrorAlert } from '~/utils';
 import useUserStore from '~/stores/useUser';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AppProvider } from '~/context/ChatContext';
+import { AppProvider, useAppContext } from '~/context/ChatContext';
 import * as Linking from 'expo-linking';
+import * as QueryParams from 'expo-auth-session/build/QueryParams';
+import { ChatClientProvider } from '~/context/ChatClientContext';
+import { Alert } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,19 +25,25 @@ SplashScreen.preventAutoHideAsync();
 const InitialLayout = () => {
   const { setUser } = useUserStore();
 
-  // useEffect(() => {
-  //   Linking.addEventListener('url', ({ url }) => {
-  //     const match = url.match(new RegExp(`^com.empowering-educators://(.*)`));
-  //     console.log(match, 'match');
-  //     if (match) {
-  //       router.push(`/(public)/${match[1]}`);
-  //     }
-  //   });
-  // }, []);
+  const { setSession } = useAppContext();
+
+  useEffect(() => {
+    Linking.addEventListener('url', ({ url }) => {
+      router.push({
+        pathname: `/(public)/reset-password/`,
+        params: {
+          url,
+        },
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(event, 'event');
+      if (event === 'SIGNED_IN') {
+        setSession(session);
+      }
+
       if (!session?.user) {
         router.replace('/(public)/signin');
         return;
@@ -85,11 +94,13 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={config}>
-      <AppProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <InitialLayout />
-        </GestureHandlerRootView>
-      </AppProvider>
+      <ChatClientProvider>
+        <AppProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <InitialLayout />
+          </GestureHandlerRootView>
+        </AppProvider>
+      </ChatClientProvider>
     </TamaguiProvider>
   );
 }

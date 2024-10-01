@@ -3,7 +3,7 @@
     "name": "empowering-educators",
     "slug": "empowering-educators",
     "version": "1.0.0",
-    "scheme": "com.empowering-educators",
+    "scheme": "com.empowering.educators",
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -29,7 +29,7 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
@@ -37,20 +37,35 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.empowering-educators"
+      "bundleIdentifier": "com.empowering.educators"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.rayyaan.empoweringeducators",
+      "package": "com.empowering.educators",
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
         "android.permission.ACCESS_NETWORK_STATE"
-      ]
+      ],
+      "versionCode": 2
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "96418584-4ead-4b2b-bfa2-64d61e1380f4"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/96418584-4ead-4b2b-bfa2-64d61e1380f4"
     }
   }
 }

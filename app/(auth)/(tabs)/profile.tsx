@@ -11,9 +11,15 @@ import { decode } from 'base64-arraybuffer';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '~/utils/supabase';
 import useUserStore from '~/stores/useUser';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import colors from '~/constants/colors';
-import { showErrorAlert } from '~/utils';
+import { axiosClient, showErrorAlert } from '~/utils';
+import { StreamChat } from 'stream-chat';
+import { useChatClientContext } from '~/context/ChatClientContext';
+import { useAppContext } from '~/context/ChatContext';
+import { router, usePathname } from 'expo-router';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface ProfileFormProps {
   email: string;
@@ -24,7 +30,14 @@ interface ProfileFormProps {
 export default function Profile() {
   const { user, setUser } = useUserStore();
 
-  const { control, handleSubmit } = useForm<ProfileFormProps>({
+  const { client } = useChatClientContext();
+
+  const pathName = usePathname();
+
+  const { profileUpdateLoading, setProfileUpdateLoading, updatePathName, setUpdatePathName } =
+    useAppContext();
+
+  const { control, handleSubmit, setValue } = useForm<ProfileFormProps>({
     defaultValues: {
       name: user?.name ?? '',
       email: user?.email ?? '',
@@ -35,8 +48,6 @@ export default function Profile() {
   const [formLoading, setFormLoading] = useState(false);
 
   const updateUserInDatabase = async (userId: string, name: string) => {
-    console.log(userId, 'userId', name, 'name');
-
     const { data: userData, error: userError } = await supabase
       .from('users')
       .update({
@@ -50,41 +61,33 @@ export default function Profile() {
       throw userError;
     }
 
-    console.log(userData, 'UserData', userId, name);
-
     return userData;
   };
 
   const updateProfile: SubmitHandler<ProfileFormProps> = async (data) => {
     try {
-      setFormLoading(true);
+      setProfileUpdateLoading(true);
 
       const userId = user?.id!;
       const userData = await updateUserInDatabase(userId, data?.name);
 
       setUser(userData);
-      setFormLoading(false);
-
-      Alert.alert('Success', 'Profile updated successfully');
 
       if (data?.password) {
-        const { error: authError } = await supabase.auth.updateUser({
-          password: data?.password,
-          data: {
-            full_name: data?.name,
-          },
+        const { data: axiosData } = await axiosClient.post('resetUserPassword', {
+          id: userId,
+          password: data.password,
+          name: data?.name,
         });
 
-        console.log(authError, 'wtf');
-
-        if (authError) {
-          throw authError;
-        }
+        setValue('password', '');
       }
-    } catch (error: any) {
+
+      Alert.alert('Success', 'Profile updated successfully');
+    } catch (error) {
       showErrorAlert(error);
     } finally {
-      setFormLoading(false);
+      setProfileUpdateLoading(false);
     }
   };
 
@@ -143,6 +146,21 @@ export default function Profile() {
       setUploadLoading(false);
     }
   };
+
+  const deleteAccount = async () => {
+    const response = Alert.prompt(
+      'Are you sure you want to delete your account?',
+      'This action is irreversible'
+    );
+    console.log(response, 'Response');
+
+    try {
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    setUpdatePathName(pathName);
+  }, [pathName]);
 
   return (
     <WrapperContainer scrollEnabled>
@@ -230,7 +248,7 @@ export default function Profile() {
 
         <YStack ai={'center'} jc={'center'} mt="$8" space="$3">
           <Button borderRadius={6} w={160} bg="$primary_blue" onPress={handleSubmit(updateProfile)}>
-            {formLoading ? (
+            {profileUpdateLoading ? (
               <ActivityIndicator color="white" size={'small'} />
             ) : (
               <Text fontSize={16} fontFamily="$body" color="white">
@@ -243,16 +261,21 @@ export default function Profile() {
             w={160}
             bg="$primary_yellow"
             onPress={async () => {
-              await supabase.auth.signOut();
-              setUser(null);
+              // await supabase.auth.signOut();
+
+              AsyncStorage.removeItem('sb-xsmvurpfpaavwhqhbage-auth-token')
+                .then(() => {
+                  setUser(null);
+                  // @ts-ignore
+                  client?.disconnectUser();
+                  router.replace('/(public)/signin');
+                })
+                .catch((err) => {
+                  console.log(err, 'Error');
+                });
             }}>
             <Text fontSize={16} fontFamily="$body" color="$primary_blue">
               SIGN OUT
-            </Text>
-          </Button>
-          <Button borderRadius={6} w={200} bg="transparent">
-            <Text fontSize={16} fontFamily="$body" color="$primary_blue">
-              DELETE ACCOUNT
             </Text>
           </Button>
         </YStack>

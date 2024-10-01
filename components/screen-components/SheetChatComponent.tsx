@@ -5,17 +5,93 @@ import { Circle, Text, View, XStack } from 'tamagui';
 import colors from '~/constants/colors';
 import { User } from '~/types';
 import { supabase } from '~/utils/supabase';
-import { StreamChat } from 'stream-chat';
+import { StreamChat, Channel } from 'stream-chat';
 import useUserStore from '~/stores/useUser';
 import { router } from 'expo-router';
+import { useAppContext } from '~/context/ChatContext';
+import { useChatClientContext } from '~/context/ChatClientContext';
 
-const chatClient = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY!);
+interface SheetFlatlistRenderComponentProps {
+  item: User;
+  onSendMessage: (id: string) => void;
+}
+
+const SheetFlatlistRenderComponent: React.FC<SheetFlatlistRenderComponentProps> = ({
+  item,
+  onSendMessage,
+}) => {
+  const { user } = useUserStore();
+
+  const [channelLocal, setChannelLocal] = useState<Channel | null>(null);
+
+  const { setChannel } = useAppContext();
+
+  const { client, clientIsReady } = useChatClientContext();
+
+  useEffect(() => {
+    if (!client || !clientIsReady) return;
+
+    (async () => {
+      const filter = {
+        type: 'messaging',
+        id: { $eq: `channel_${user?.id?.slice(0, 15)}--${item?.id?.slice(0, 15)}` },
+      };
+
+      // @ts-ignore
+      const channels = await client?.queryChannels(filter, {
+        last_message_at: -1,
+      });
+
+      if (channels.length > 0) {
+        setChannelLocal(channels[0]);
+      }
+    })();
+  }, [client, clientIsReady]);
+
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        if (channelLocal) {
+          setChannel(channelLocal);
+          router.push({
+            pathname: '/(auth)/(tabs)/chat/channelScreen',
+            params: {
+              title: item?.name,
+            },
+          });
+        } else {
+          onSendMessage(item?.id);
+        }
+      }}>
+      <XStack w={'100%'} space="$2.5" ai={'center'} py="$3">
+        <Circle bg={'$primary_grey'} size={40}>
+          {item?.image_url && (
+            <Image
+              source={{ uri: item?.image_url }}
+              style={{ width: 40, height: 40, borderRadius: 100 }}
+            />
+          )}
+        </Circle>
+        <View>
+          <Text fontSize={16} fontWeight={'600'}>
+            {item?.name}
+          </Text>
+          <Text fs={14} ml={'$1'}>
+            {item?.email}
+          </Text>
+        </View>
+      </XStack>
+    </TouchableOpacity>
+  );
+};
 
 const SheetChatComponent: React.FC = () => {
   const [coaches, setCoaches] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
 
   const { user } = useUserStore();
+
+  const { client, clientIsReady } = useChatClientContext();
 
   useEffect(() => {
     (async () => {
@@ -36,9 +112,10 @@ const SheetChatComponent: React.FC = () => {
   }, []);
 
   const onSendMessage = async (id: string) => {
-    if (!chatClient) return;
+    if (!client) return;
 
-    const newChannel = chatClient.channel(
+    // @ts-ignore
+    const newChannel = client.channel(
       'messaging',
       `channel_${user?.id?.slice(0, 15)}--${id?.slice(0, 15)}`,
       {
@@ -71,25 +148,7 @@ const SheetChatComponent: React.FC = () => {
           keyExtractor={({ id }, index) => index.toString()}
           ListEmptyComponent={<Text>No Coaches Available</Text>}
           renderItem={({ item }) => {
-            return (
-              <TouchableOpacity onPress={() => onSendMessage(item?.id)}>
-                <XStack w={'100%'} space="$2.5" ai={'center'} py="$3">
-                  <Circle bg={'$primary_grey'} size={40}>
-                    {item?.image_url && (
-                      <Image source={{ uri: item?.image_url }} style={{ width: 40, height: 40 }} />
-                    )}
-                  </Circle>
-                  <View>
-                    <Text fontSize={16} fontWeight={'600'}>
-                      {item?.name}
-                    </Text>
-                    <Text fs={14} ml={'$1'}>
-                      {item?.email}
-                    </Text>
-                  </View>
-                </XStack>
-              </TouchableOpacity>
-            );
+            return <SheetFlatlistRenderComponent item={item} onSendMessage={onSendMessage} />;
           }}
         />
       )}
