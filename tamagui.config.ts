@@ -84,7 +84,7 @@ export const Subtitle = styled(SizableText, {
 export const Button = styled(ButtonTamagui, {
   backgroundColor: '$primary_yellow',
   borderRadius: 28,
-  maxWidth: 500,
+  maxWidth: '100%',
 
   // Shaddows
   // shadowColor: '#000',
@@ -106,7 +106,7 @@ export const OutlinedButton = styled(ButtonTamagui, {
   borderColor: '$primary_yellow',
   borderWidth: 2,
   borderRadius: 28,
-  maxWidth: 500,
+  maxWidth: '100%',
   // Button text
   color: '$primary_yellow',
   fontWeight: '600', // Is not passed down to the text. Probably a bug in Tamagui: https://github.com/tamagui/tamagui/issues/1156#issuecomment-1802594930

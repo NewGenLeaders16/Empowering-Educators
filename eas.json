@@ -24,6 +24,7 @@
       "autoIncrement": true,
       "channel": "production",
       "distribution": "store",
+      "buildType": "release",
       "env": {
         "ENV": "production"
       }
