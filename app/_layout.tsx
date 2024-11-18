@@ -40,6 +40,7 @@ const InitialLayout = () => {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(event, 'data', session);
       if (event === 'SIGNED_IN') {
         setSession(session);
       }

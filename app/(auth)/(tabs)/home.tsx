@@ -7,7 +7,7 @@ import BottomSheet, {
 import { router } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Text, View, XStack } from 'tamagui';
+import { ScrollView, Text, View, XStack } from 'tamagui';
 import SheetChatComponent from '~/components/screen-components/SheetChatComponent';
 import ScreenHeader from '~/components/ScreenHeader';
 import WrapperContainer from '~/components/WrapperContainer';
@@ -25,9 +25,9 @@ export default function Home() {
   const { user } = useUserStore();
 
   return (
-    <WrapperContainer>
+    <WrapperContainer scrollEnabled>
       <ScreenHeader hideIcon />
-      <View flex={1} bg={'white'} px="$5">
+      <ScrollView flex={1} bg={'white'} px="$5">
         <Text fontSize={18} fontFamily={'$body'} fontWeight={'500'} mt="$8">
           Below is your NewGen Portal. Here you can open a coaching room with your NewGen Coach,
           book your next Guided Growth Session and access our resource portal
@@ -133,7 +133,7 @@ export default function Home() {
             <SheetChatComponent />
           </BottomSheetView>
         </BottomSheet>
-      </View>
+      </ScrollView>
     </WrapperContainer>
   );
 }
