@@ -52,7 +52,7 @@ export default function AddResource() {
       });
     } else {
       result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         quality: 0.7,
       });
@@ -97,12 +97,16 @@ export default function AddResource() {
               ? '.wav'
               : splittedDocumentMimeType === 'pdf'
                 ? '.pdf'
-                : '.mp4';
-
-      console.log(documentExtension, 'DocumentExtension', thumbnailExtension, 'ThumbnailExtension');
+                : splittedDocumentMimeType === 'jpeg' ||
+                    splittedDocumentMimeType === 'png' ||
+                    splittedDocumentMimeType === 'jpg'
+                  ? `.${splittedDocumentMimeType}`
+                  : '.mp4';
 
       if (
-        !['.mp4', '.mov', '.pdf', '.mp3', '.wav'].includes(documentExtension) ||
+        !['.mp4', '.mov', '.pdf', '.mp3', '.wav', '.png', '.jpg', '.jpeg'].includes(
+          documentExtension
+        ) ||
         !['png', 'jpg', 'jpeg'].includes(thumbnailExtension)
       ) {
         return Alert.alert('Invalid file type', 'Please upload a valid file type');
@@ -180,8 +184,6 @@ export default function AddResource() {
     }
   };
 
-  console.log(Array.from(selectedIds), 'SelectedIds');
-
   return (
     <ScrollView flex={1} bg={'$white'} px="$5" contentContainerStyle={{ paddingBottom: 10 }}>
       <Text mt="$5" fontSize={28} fontFamily={'$heading'} fontWeight={'700'}>
@@ -196,6 +198,7 @@ export default function AddResource() {
             { name: 'Video', value: 'video' },
             { name: 'Podcast', value: 'podcast' },
             { name: 'PDF', value: 'pdf' },
+            { name: 'Image', value: 'image' },
           ]}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
@@ -231,27 +234,38 @@ export default function AddResource() {
               ? 'Video (.mp4)'
               : selectedCategory === 'podcast'
                 ? 'Podcast (.mp3, .wav)'
-                : 'PDF (.pdf)'}
+                : selectedCategory === 'pdf'
+                  ? 'PDF (.pdf)'
+                  : 'Image (.jpeg, .png)'}
           </Label>
           <TouchableOpacity onPress={uploadDocument}>
             <View
               w={'100%'}
-              h={75}
+              h={uploadedDocument?.mimeType?.startsWith('image') ? 150 : 75}
               borderWidth={1}
               borderColor={'$primary_grey'}
               borderRadius={'$2'}
               dsp={'flex'}
               ai={'center'}
               jc={'center'}>
-              <Text color={'$primary_blue'} fontFamily={'$body'} fontWeight={'700'} fs={26}>
-                {uploadedDocument
-                  ? uploadedDocument?.name
-                  : selectedCategory === 'video'
-                    ? 'Choose Video'
-                    : selectedCategory === 'podcast'
-                      ? 'Choose Podcast'
-                      : 'Choose File'}
-              </Text>
+              {uploadedDocument?.mimeType?.startsWith('image') ? (
+                <Image
+                  source={{ uri: uploadedDocument?.uri }}
+                  style={{ width: '100%', height: '100%', resizeMode: 'cover' }}
+                />
+              ) : (
+                <Text color={'$primary_blue'} fontFamily={'$body'} fontWeight={'700'} fs={26}>
+                  {uploadedDocument
+                    ? (uploadedDocument?.name ?? `${selectedCategory} uploaded`)
+                    : selectedCategory === 'video'
+                      ? 'Choose Video'
+                      : selectedCategory === 'podcast'
+                        ? 'Choose Podcast'
+                        : selectedCategory === 'pdf'
+                          ? 'Choose File'
+                          : 'Choose Image'}
+                </Text>
+              )}
             </View>
           </TouchableOpacity>
         </YStack>

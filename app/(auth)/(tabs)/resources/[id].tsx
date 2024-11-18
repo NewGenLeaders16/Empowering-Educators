@@ -9,6 +9,7 @@ import { Video, ResizeMode, Audio } from 'expo-av';
 import AudioPlayer from '~/components/screen-components/AudiioPlayer';
 import { Button } from '~/tamagui.config';
 import Pdf from 'react-native-pdf';
+import { AntDesign, Entypo, MaterialIcons } from '@expo/vector-icons';
 
 const ResourceDetails: React.FC = () => {
   const { id } = useLocalSearchParams();
@@ -42,11 +43,29 @@ const ResourceDetails: React.FC = () => {
         </View>
       ) : (
         <ScrollView flex={1} bg={'$white'} px="$3" contentContainerStyle={{ paddingBottom: 40 }}>
-          <Image
-            source={{ uri: resource?.thumbnail_url! }}
-            style={{ width: '100%', height: 240, borderRadius: 5, marginTop: 24 }}
-            key={resource?.thumbnail_url}
-          />
+          {resource?.thumbnail_url ? (
+            <Image
+              source={{ uri: resource?.thumbnail_url! }}
+              style={{ width: '100%', height: 240, borderRadius: 5, marginTop: 24 }}
+              // key={item.thumbnail_url}
+            />
+          ) : (
+            <View height={240} w={'100%'} alignItems="center" justifyContent="center" mt={24}>
+              {resource?.category === 'video' ? (
+                <Entypo name="video" size={50} color="black" />
+              ) : resource?.category === 'podcast' ? (
+                <MaterialIcons name="audiotrack" size={50} color="black" />
+              ) : resource?.category === 'pdf' ? (
+                <AntDesign name="pdffile1" size={50} color="black" />
+              ) : (
+                <Image
+                  source={{ uri: resource?.file_url! }}
+                  style={{ width: '100%', height: 240, borderRadius: 5 }}
+                />
+              )}
+            </View>
+          )}
+
           <Text mt="$5" fontSize={28} fontFamily={'$heading'} fontWeight={'700'}>
             {resource?.title}
           </Text>
@@ -92,6 +111,15 @@ const ResourceDetails: React.FC = () => {
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
               />
             </>
+          )}
+
+          {resource?.category === 'image' && (
+            <Image
+              source={{ uri: resource?.file_url! }}
+              style={{ width: '100%', height: 240, borderRadius: 5, marginTop: 24 }}
+              key={resource?.file_url}
+              resizeMode="contain"
+            />
           )}
 
           {resource?.category === 'podcast' && <AudioPlayer audioUrl={resource?.file_url!} />}

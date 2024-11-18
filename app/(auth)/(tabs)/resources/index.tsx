@@ -1,4 +1,4 @@
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Entypo, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Touchable, TouchableOpacity } from 'react-native';
@@ -8,6 +8,7 @@ import { Button } from '~/tamagui.config';
 import { Resources } from '~/types';
 import { supabase } from '~/utils/supabase';
 import { FlashList } from '@shopify/flash-list';
+import colors from '~/constants/colors';
 
 export default function ResourcesPage() {
   const { user } = useUserStore();
@@ -71,6 +72,8 @@ export default function ResourcesPage() {
   }, []);
 
   const RenderItem = useCallback(({ item }: { item: Resources }) => {
+    console.log(item, 'O');
+
     return (
       <TouchableOpacity
         onPress={() =>
@@ -96,11 +99,29 @@ export default function ResourcesPage() {
           style={{
             elevation: 7,
           }}>
-          <Image
-            source={{ uri: item?.thumbnail_url! }}
-            style={{ width: '100%', height: 160, borderRadius: 5 }}
-            // key={item.thumbnail_url}
-          />
+          {item?.thumbnail_url ? (
+            <Image
+              source={{ uri: item?.thumbnail_url! }}
+              style={{ width: '100%', height: 160, borderRadius: 5 }}
+              // key={item.thumbnail_url}
+            />
+          ) : (
+            <View height={160} w={'100%'} alignItems="center" justifyContent="center">
+              {item?.category === 'video' ? (
+                <Entypo name="video" size={50} color="black" />
+              ) : item?.category === 'podcast' ? (
+                <MaterialIcons name="audiotrack" size={50} color="black" />
+              ) : item?.category === 'pdf' ? (
+                <AntDesign name="pdffile1" size={50} color="black" />
+              ) : (
+                <Image
+                  source={{ uri: item?.file_url! }}
+                  style={{ width: '100%', height: 160, borderRadius: 5 }}
+                  // key={item.thumbnail_url}
+                />
+              )}
+            </View>
+          )}
           <Text fontSize={20} fontFamily={'$body'} fontWeight={'700'} mt="$2">
             {item?.title}
           </Text>
@@ -129,26 +150,35 @@ export default function ResourcesPage() {
         </Button>
       )}
 
-      <FlashList
-        data={resources}
-        renderItem={({ item }) => <RenderItem item={item} />}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 20, paddingTop: 20 }}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.3}
-        showsVerticalScrollIndicator={false}
-        estimatedItemSize={243}
-        // initialNumToRender={3}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
-        ListEmptyComponent={
-          <View flex={1} ai={'center'} jc={'center'}>
-            <Text fontFamily={'$body'} fontSize={18} fontWeight={'600'}>
-              No resources found
-            </Text>
-          </View>
-        }
-      />
+      {loading && page === 0 ? (
+        <View mt="$8">
+          <ActivityIndicator color={colors.light.primary_blue} size={'large'} />
+        </View>
+      ) : (
+        <FlashList
+          data={resources}
+          renderItem={({ item }) => <RenderItem item={item} />}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 20, paddingTop: 20 }}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.3}
+          showsVerticalScrollIndicator={false}
+          estimatedItemSize={243}
+          // initialNumToRender={3}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          ListFooterComponent={() =>
+            loading ? <ActivityIndicator color={colors.light.primary_blue} /> : null
+          }
+          ListEmptyComponent={
+            <View flex={1} ai={'center'} jc={'center'}>
+              <Text fontFamily={'$body'} fontSize={18} fontWeight={'600'}>
+                No resources found
+              </Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 }

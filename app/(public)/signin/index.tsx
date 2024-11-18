@@ -140,6 +140,7 @@ const SignIn: React.FC = () => {
                 label="Email"
                 placeholder="Enter your email"
                 rules={{ required: 'Email is required' }}
+                autoCapitalize="none"
               />
 
               <ValidateInput

@@ -117,6 +117,15 @@ export default function Coaching() {
               agendaTodayColor: colors.light.primary_blue,
               agendaKnobColor: colors.light.primary_blue,
             }}
+            renderEmptyData={() => {
+              return (
+                <View jc={'center'} ai={'center'} mt="$5">
+                  <Text fontFamily={'$body'} fs={12} fontWeight={600}>
+                    No Bookings for today
+                  </Text>
+                </View>
+              );
+            }}
             selected={initialSelectedDate || new Date().toISOString().slice(0, 10)}
             markedDates={markedDates}
             showClosingKnob={true}
