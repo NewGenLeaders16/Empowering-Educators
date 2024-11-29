@@ -67,8 +67,6 @@ const SignUp: React.FC = () => {
 
   const url = Linking.useURL();
 
-  console.log('signupLoading', url);
-
   return (
     <ScrollView
       flex={1}
@@ -141,10 +139,13 @@ const SignUp: React.FC = () => {
                 ALREADY HAVE AN ACCOUNT ?
               </Text>
             </Button>
-            <Button h={22}>
-              <Text fontSize={12} fontFamily="$body" color="$black">
-                Want to be a coach? Contact XXX
-              </Text>
+            <Button h={22} onPress={() => Linking.openURL('mailto:joel@newgenleaders.com.au')}>
+              <View ai={'center'} jc={'center'}>
+                <Text fontSize={12} fontFamily="$body" color="$black">
+                  Want to be a coach?
+                </Text>
+                <Text fontWeight={'bold'}>Contact joel@newgenleaders.com.au</Text>
+              </View>
             </Button>
           </YStack>
         </View>

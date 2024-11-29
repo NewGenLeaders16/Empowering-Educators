@@ -147,15 +147,44 @@ export default function Profile() {
     }
   };
 
-  const deleteAccount = async () => {
-    const response = Alert.prompt(
-      'Are you sure you want to delete your account?',
-      'This action is irreversible'
-    );
-    console.log(response, 'Response');
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
-    try {
-    } catch (error) {}
+  const deleteAccount = async () => {
+    setDeleteLoading(true);
+
+    Alert.alert(
+      'Are you sure you want to delete your account?',
+      'This action is irreversible, all your data associated with this account will be lost',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => setDeleteLoading(false),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await axiosClient.post('deleteAccount', {
+                id: user?.id,
+              });
+
+              await AsyncStorage.removeItem('sb-xsmvurpfpaavwhqhbage-auth-token');
+              setUser(null);
+              // @ts-ignore
+              client?.disconnectUser();
+              router.replace('/(public)/signin');
+              Alert.alert('Success', 'Account deleted successfully');
+            } catch (error) {
+              showErrorAlert(error);
+            } finally {
+              setDeleteLoading(false);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   useEffect(() => {
@@ -276,6 +305,11 @@ export default function Profile() {
             }}>
             <Text fontSize={16} fontFamily="$body" color="$primary_blue">
               SIGN OUT
+            </Text>
+          </Button>
+          <Button borderRadius={6} bg="$red10Light" onPress={deleteAccount}>
+            <Text fontSize={16} fontFamily="$body" color="$white">
+              DELETE ACCOUNT
             </Text>
           </Button>
         </YStack>

@@ -32,12 +32,13 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.empowering.educators"
+      "bundleIdentifier": "com.empowering.educators",
+      "entitlements": {
+        "apn-environment": null
+      }
     },
     "android": {
       "adaptiveIcon": {
