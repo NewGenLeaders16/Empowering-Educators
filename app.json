@@ -2,7 +2,7 @@
   "expo": {
     "name": "empowering-educators",
     "slug": "empowering-educators",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "scheme": "com.empowering.educators",
     "web": {
       "bundler": "metro",
@@ -36,8 +36,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.empowering.educators",
-      "entitlements": {
-        "apn-environment": null
+      "infoPlist": {
+        "NSCameraUsageDescription": "We need camera access to allow you to take photos/videos for uploading to your profile or sharing with other users.",
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library to let you upload photos/videos for sharing or creating content in the app.",
+        "NSPhotoLibraryAddUsageDescription": "We need access to your photo library to let you upload photos/videos for sharing or creating content in the app."
       }
     },
     "android": {

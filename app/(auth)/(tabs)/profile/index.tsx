@@ -312,6 +312,16 @@ export default function Profile() {
               DELETE ACCOUNT
             </Text>
           </Button>
+          <Button
+            h={22}
+            onPress={() => router.push('/(auth)/(tabs)/profile/eula-terms')}
+            bg="$white">
+            <View ai={'center'} jc={'center'}>
+              <Text fontSize={16} fontFamily="$body" color="$black" fontWeight={'bold'}>
+                View EULA Terms
+              </Text>
+            </View>
+          </Button>
         </YStack>
       </ScrollView>
     </WrapperContainer>

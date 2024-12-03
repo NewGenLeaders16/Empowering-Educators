@@ -139,12 +139,20 @@ const SignUp: React.FC = () => {
                 ALREADY HAVE AN ACCOUNT ?
               </Text>
             </Button>
+
             <Button h={22} onPress={() => Linking.openURL('mailto:joel@newgenleaders.com.au')}>
               <View ai={'center'} jc={'center'}>
                 <Text fontSize={12} fontFamily="$body" color="$black">
                   Want to be a coach?
                 </Text>
                 <Text fontWeight={'bold'}>Contact joel@newgenleaders.com.au</Text>
+              </View>
+            </Button>
+            <Button h={22} onPress={() => router.push('/(public)/eula-terms')}>
+              <View ai={'center'} jc={'center'}>
+                <Text fontSize={14} fontFamily="$body" color="$black" fontWeight={'bold'}>
+                  View EULA Terms
+                </Text>
               </View>
             </Button>
           </YStack>
