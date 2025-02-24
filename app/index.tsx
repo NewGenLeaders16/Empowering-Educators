@@ -10,8 +10,6 @@ import { supabase } from '~/utils/supabase';
 const createSessionFromUrl = async (url: string) => {
   const { params, errorCode } = QueryParams.getQueryParams(url);
 
-  console.log(url, 'url');
-
   if (errorCode) throw new Error(errorCode);
   const { access_token, refresh_token } = params;
 

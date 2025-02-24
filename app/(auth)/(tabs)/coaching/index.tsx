@@ -16,8 +16,6 @@ export default function Coaching() {
 
   const [items, setItems] = useState<any>({});
 
-  console.log(items, 'Items');
-
   const fetchBookings = async () => {
     const { data: bookings, error } = await supabase
       .from('coachings')

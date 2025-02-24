@@ -13,10 +13,19 @@
       "expo-router",
       "@config-plugins/react-native-blob-util",
       "@config-plugins/react-native-pdf",
+      "@react-native-firebase/app",
       [
         "expo-dev-launcher",
         {
           "launchMode": "most-recent"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ]
     ],
@@ -34,6 +43,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true,
       "bundleIdentifier": "com.empowering.educators",
       "infoPlist": {
@@ -43,6 +53,7 @@
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

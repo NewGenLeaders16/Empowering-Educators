@@ -26,8 +26,6 @@ const SignUp: React.FC = () => {
   const { setUser } = useUserStore();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
-
     setSignUpLoading(true);
 
     const { data: userData, error: userError } = await supabase.auth.signUp({

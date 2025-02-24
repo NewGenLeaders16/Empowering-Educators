@@ -56,8 +56,6 @@ const SignIn: React.FC = () => {
       password: data.password,
     });
 
-    console.log(userData, 'userData');
-
     if (userError) {
       console.log(userError, 'User Error');
       showErrorAlert(userError);
@@ -83,8 +81,6 @@ const SignIn: React.FC = () => {
   };
 
   const onForgotPassword: SubmitHandler<FormDataForgotPassword> = async (data) => {
-    console.log(data, 'Data');
-
     setForgotPasswordLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(data?.email, {

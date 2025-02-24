@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "483629139154",
+    "project_id": "empowering-educators",
+    "storage_bucket": "empowering-educators.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483629139154:android:36b381c4119dfca369d90b",
+        "android_client_info": {
+          "package_name": "com.empowering.educators"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9dF-BXkZGpFNCCDBcbu5dUm6pmoah4Fk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

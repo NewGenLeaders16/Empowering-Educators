@@ -22,9 +22,6 @@ const PDFViewer = () => {
           source={{ uri: pdfUri as string, cache: true }}
           // style={styles.pdf}
           style={{ flex: 1, backgroundColor: 'white' }}
-          onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`number of pages: ${numberOfPages}`);
-          }}
         />
       )}
     </View>

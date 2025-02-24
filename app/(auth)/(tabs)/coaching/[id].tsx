@@ -16,6 +16,7 @@ import { supabase } from '~/utils/supabase';
 import { Calendar } from 'react-native-calendars';
 import { Button } from '~/tamagui.config';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { axiosClient } from '~/utils';
 
 export default function CoachDetails() {
   const { user } = useUserStore();
@@ -71,7 +72,6 @@ export default function CoachDetails() {
   };
 
   const onChange = (event: any, selectedDate: any) => {
-    console.log(selectedDate, 'Selected Date');
     const currentDate = selectedDate;
     setSelectedTime(currentDate);
   };
@@ -96,19 +96,27 @@ export default function CoachDetails() {
     const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
     const formattedTime = `${hours}:${minutes}`;
 
-    const { data, error } = await supabase.from('coachings').insert({
-      coach_id: coach?.id,
-      teacher_id: user?.id,
-      scheduled_date: selectedDate,
-      scheduled_time: formattedTime,
-      formatted_timestamp: selectedTime?.toISOString(),
-    });
+    const { data, error } = await supabase
+      .from('coachings')
+      .insert({
+        coach_id: coach?.id,
+        teacher_id: user?.id,
+        scheduled_date: selectedDate,
+        scheduled_time: formattedTime,
+        formatted_timestamp: selectedTime?.toISOString(),
+      })
+      .select('*')
+      .single();
 
     if (error) {
       console.log(error, 'Error');
       setBookingLoading(false);
       return Alert.alert('Error', 'Failed to book session');
     }
+
+    await axiosClient.post('notifications/coachingBooked', {
+      coachingID: data?.id,
+    });
 
     setBookingLoading(false);
 

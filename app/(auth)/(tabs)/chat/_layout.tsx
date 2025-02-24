@@ -17,8 +17,6 @@ import WrapperContainer from '~/components/WrapperContainer';
 import { AntDesign } from '@expo/vector-icons';
 import { useChatClientContext } from '~/context/ChatClientContext';
 
-// const chatClient = StreamChat.getInstance(process.env.EXPO_PUBLIC_STREAM_API_KEY!);
-
 export default function ChatLayout() {
   const { clientIsReady, client } = useChatClientContext();
 

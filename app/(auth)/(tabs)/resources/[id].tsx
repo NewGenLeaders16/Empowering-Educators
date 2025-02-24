@@ -23,8 +23,6 @@ const ResourceDetails: React.FC = () => {
     (async () => {
       const { data, error } = await supabase.from('resources').select('*').eq('id', id).single();
 
-      console.log(data, error, 'data,error');
-
       if (error) {
         console.error(error);
         return;

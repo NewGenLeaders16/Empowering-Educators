@@ -2,6 +2,7 @@ import { useFonts } from 'expo-font';
 import { router, Slot, SplashScreen, Stack, usePathname, useSegments } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { TamaguiProvider } from 'tamagui';
+import messaging from '@react-native-firebase/messaging';
 
 import config from '../tamagui.config';
 import { FontAwesome } from '@expo/vector-icons';
@@ -22,6 +23,15 @@ SplashScreen.preventAutoHideAsync();
 //   initialRouteName: '(tabs)',
 // };
 
+messaging().onNotificationOpenedApp(async (message) => {
+  console.log(message, 'message');
+  if (message?.data?.channel_id) {
+    router.push({
+      pathname: '/(auth)/(tabs)/chat/',
+    });
+  }
+});
+
 const InitialLayout = () => {
   const { setUser } = useUserStore();
 
@@ -40,7 +50,6 @@ const InitialLayout = () => {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(event, 'data', session);
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
         setSession(session);
       }

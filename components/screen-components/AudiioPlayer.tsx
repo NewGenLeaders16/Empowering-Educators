@@ -149,8 +149,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl }) => {
     });
   }, [sound]);
 
-  console.log('position', position, duration, 'duration');
-
   const formatDuration = (duration: number) => {
     const totalSeconds = Math.floor(duration / 1000);
     const minutes = Math.floor(totalSeconds / 60);

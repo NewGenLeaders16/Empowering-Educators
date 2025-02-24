@@ -38,10 +38,6 @@ export default function AddResource() {
 
   const { selectedIds } = useAppContext();
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data, 'Data');
-  };
-
   const uploadDocument = async () => {
     let result: any;
 
@@ -60,7 +56,6 @@ export default function AddResource() {
 
     if (!result.canceled) {
       setUploadedDocument(result.assets[0]);
-      console.log(result, 'Result');
     }
   };
 
@@ -73,7 +68,6 @@ export default function AddResource() {
 
     if (!result.canceled) {
       setUploadedThumbnail(result.assets[0]);
-      console.log(result, 'Result');
     }
   };
 

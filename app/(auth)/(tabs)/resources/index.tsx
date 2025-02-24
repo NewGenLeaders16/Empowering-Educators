@@ -72,8 +72,6 @@ export default function ResourcesPage() {
   }, []);
 
   const RenderItem = useCallback(({ item }: { item: Resources }) => {
-    console.log(item, 'O');
-
     return (
       <TouchableOpacity
         onPress={() =>
