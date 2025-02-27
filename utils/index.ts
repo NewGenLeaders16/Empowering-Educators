@@ -6,7 +6,7 @@ const showErrorAlert = (error: any) => {
 };
 
 const axiosClient = axios.create({
-  baseURL: 'https://empowering-educators-backend.vercel.app/api/',
+  baseURL: 'https://website-new-gen-66db348f.vercel.app/api/',
   // baseURL: 'http://localhost:3001/api/',
 });
 
