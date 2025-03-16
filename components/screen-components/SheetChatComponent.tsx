@@ -1,5 +1,5 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Circle, Text, View, XStack } from 'tamagui';
 import colors from '~/constants/colors';
