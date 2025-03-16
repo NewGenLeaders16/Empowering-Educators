@@ -26,11 +26,7 @@ const createSessionFromUrl = async (url: string) => {
 };
 
 export default function Page() {
-  console.log('Hello world');
-
   const url = Linking.useURL();
-
-  console.log(url, 'URL');
 
   if (url) createSessionFromUrl(url as string);
 
