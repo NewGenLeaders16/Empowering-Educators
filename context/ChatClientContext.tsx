@@ -24,7 +24,6 @@ const requestPermission = async () => {
   if (enabled) {
     console.log('Authorization status:', authStatus);
   }
-  return enabled;
 };
 
 const updateFCMToken = async (userId: string, token: string) => {
@@ -53,69 +52,49 @@ export const ChatClientProvider: React.FC<{ children: ReactNode }> = ({ children
   useEffect(() => {
     if (!user || !client) return;
 
+    const registerPushToken = async () => {
+      // unsubscribe any previous listener
+      unsubscribeTokenRefreshListenerRef.current?.();
+      const token = await messaging().getToken();
+      const push_provider = 'firebase';
+      const push_provider_name = 'chat_push'; // name an alias for your push provider (optional)
+      client.setLocalDevice({
+        id: token,
+        push_provider,
+        // push_provider_name is meant for optional multiple providers support, see: /chat/docs/react/push_providers_and_multi_bundle
+        push_provider_name,
+      });
+      await AsyncStorage.setItem('@current_push_token', token);
+      if (user?.role === 'coach') {
+        await updateFCMToken(user?.id, token);
+      }
+      const removeOldToken = async () => {
+        const oldToken = await AsyncStorage.getItem('@current_push_token');
+        if (oldToken !== null) {
+          await client.removeDevice(oldToken);
+        }
+      };
+      unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(async (newToken) => {
+        await Promise.all([
+          removeOldToken(),
+          client.addDevice(newToken, push_provider, user?.id, push_provider_name),
+          AsyncStorage.setItem('@current_push_token', newToken),
+        ]);
+        if (user?.role === 'coach') {
+          await updateFCMToken(user?.id, newToken);
+        }
+      });
+    };
+
     const setupClient = async () => {
       try {
         const { data } = await axiosClient.get(`getStreamToken?id=${user?.id}`);
 
         if (data?.token) {
-          const permissionEnabled = await requestPermission();
+          await requestPermission();
+          await messaging().registerDeviceForRemoteMessages();
+          await registerPushToken();
 
-          if (permissionEnabled) {
-            try {
-              // unsubscribe any previous listener
-              unsubscribeTokenRefreshListenerRef.current?.();
-
-              // For iOS, we need to register for remote notifications first
-              if (Platform.OS === 'ios') {
-                // Register with APNS
-                await messaging().registerDeviceForRemoteMessages();
-              }
-
-              // Now get the FCM token
-              const token = await messaging().getToken();
-              console.log('FCM Token obtained:', token);
-
-              const push_provider = 'firebase';
-              const push_provider_name = 'chat_push'; // name an alias for your push provider (optional)
-
-              // IMPORTANT: Set the device BEFORE connecting the user
-              client.setLocalDevice({
-                id: token,
-                push_provider,
-                push_provider_name,
-              });
-
-              await AsyncStorage.setItem('@current_push_token', token);
-              if (user?.role === 'coach') {
-                await updateFCMToken(user?.id, token);
-              }
-
-              // Setup token refresh listener
-              const removeOldToken = async () => {
-                const oldToken = await AsyncStorage.getItem('@current_push_token');
-                if (oldToken !== null) {
-                  await client.removeDevice(oldToken);
-                }
-              };
-
-              unsubscribeTokenRefreshListenerRef.current = messaging().onTokenRefresh(
-                async (newToken) => {
-                  await Promise.all([
-                    removeOldToken(),
-                    client.addDevice(newToken, push_provider, user?.id, push_provider_name),
-                    AsyncStorage.setItem('@current_push_token', newToken),
-                  ]);
-                  if (user?.role === 'coach') {
-                    await updateFCMToken(user?.id, newToken);
-                  }
-                }
-              );
-            } catch (error) {
-              console.error('Error registering for push notifications:', error);
-            }
-          }
-
-          // Now connect the user after device registration
           await client.connectUser(
             {
               id: user?.id!,
@@ -149,9 +128,18 @@ export const ChatClientProvider: React.FC<{ children: ReactNode }> = ({ children
         unsubscribeTokenRefreshListenerRef.current();
       }
 
-      // IMPORTANT: We're NOT disconnecting the user when navigating between screens
-      // Only disconnect when the component is truly unmounting (app closing or user logging out)
-      // This is handled elsewhere in the app
+      // DO NOT disconnect the user when navigating between screens
+      // This is the key fix to prevent the "You can't use a channel after client.disconnect() was called" error
+
+      // The original code had:
+      // if (client) {
+      //   client.disconnectUser().catch((error: any) => {
+      //     console.error('Error disconnecting user:', error);
+      //   });
+      // }
+
+      // We're removing this disconnection to fix the navigation issue
+      // You should add explicit disconnection when the user logs out instead
     };
   }, [user, client]);
 
